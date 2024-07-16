@@ -21,27 +21,28 @@ namespace GameStore3.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Game> Get()
+        public IEnumerable<GameModel> Get()
         {
-            return _context.Games.ToList(); //brb merg sa iau pepsi
+            return _context.Games.ToList().Select(item => new GameModel(item)).ToList();
         }
 
         [HttpGet("{Id}")]
-        public Game Get(int Id)
+        public GameModel Get(int Id)
         {
-            return _context.Games.Where(game => game.Id == Id).FirstOrDefault();
+            return new GameModel(_context.Games.Where(game => game.Id == Id).FirstOrDefault());
         }
 
         [HttpPost]
-        public void Post([FromBody] Game game)
+        public void Post(GameModel game)
         {
-            _context.Games.Add(game);
+            game.Id = null;
+            _context.Games.Add(game.GetGame());
 
             _context.SaveChanges();
         }
         
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] Game value)
+        public void Put(int id, [FromBody] GameModel value)
         {
             var dbGame = _context.Games.Find(id);
 
